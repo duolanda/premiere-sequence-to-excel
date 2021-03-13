@@ -22,8 +22,8 @@ def scale_factor(width, height):
     '''
     根据视频大小确定表格中图片的缩放比例
     '''
-    x = width/11497
-    y = height/54000
+    x = (1920 / width) * 0.167
+    y = (1080 / width) * 0.02
     x, y = round(x, 3), round(y, 3)
     return x, y
 
@@ -153,4 +153,3 @@ if __name__ == "__main__":
 
 
     
-#4k还是不大对

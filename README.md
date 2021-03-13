@@ -4,7 +4,7 @@
 
 一个将 Pr 当前序列上的片段信息导出为 excel 文件的 Python 脚本。
 
-![sample image](https://i.loli.net/2021/03/13/lSyc3zCZUJTIBx6.png)
+![sample image](https://i.loli.net/2021/03/14/afLEAT12ois9uOR.png)
 
 测试环境：Windows 10 20H2，Adobe Premiere 2020(14.5.0)，Python 3.6
 
@@ -65,6 +65,7 @@ $ python pr_to_excel.py -o D:/documents/test.xlsx -m 0
 
 - 目前还没有做不同情况下的测试
 - 时间码有时会出现 1 帧的误差
+- 4k 视频可能会使 excel 文件过大
 
 
 
