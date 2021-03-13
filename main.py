@@ -3,6 +3,10 @@ import os
 import pymiere
 from pymiere import wrappers
 from pymiere import exe_utils
+from openpyxl import Workbook 
+from openpyxl.drawing.image import Image
+import xlsxwriter
+
 
 def seconds_to_timecode(seconds, fps):
     '''
@@ -13,6 +17,15 @@ def seconds_to_timecode(seconds, fps):
     m, s = divmod(s, 60)
     h, m = divmod(m, 60)
     return ("%02d;%02d;%02d;%02d" % (h, m, s, f))
+
+def scale_factor(width, height):
+    '''
+    根据视频大小确定表格中图片的缩放比例
+    '''
+    x = width/11497
+    y = height/54000
+    x, y = round(x, 3), round(y, 3)
+    return x, y
 
 
 if not exe_utils.is_premiere_running():
@@ -47,13 +60,58 @@ for track in tracks:
             'src_in': seconds_to_timecode(clip.inPoint.seconds, fps),
             'src_out': seconds_to_timecode(clip.outPoint.seconds, fps),
             'duration': seconds_to_timecode(clip.duration.seconds, fps),
-            'preview_path': os.path.abspath('.')+'\\frame_'+str(clip.nodeId)+'.jpg'
+            'preview_path': os.path.abspath('.')+'\\frame_'+str(clip.nodeId)+'.jpg',
         })
-        # preview_frame_time = video_clips[-1]['start']
-        # active_sequence_qe.exportFrameJPEG(preview_frame_time, video_clips[-1]['preview_path'])
-print(video_clips)
+        preview_frame_time = video_clips[-1]['start']
+        active_sequence_qe.exportFrameJPEG(preview_frame_time, video_clips[-1]['preview_path'])
+
+print('Loading preview images')
+while(True):
+    if os.path.isfile(video_clips[-1]['preview_path']):
+        print('Images loading completed')
+        break
+
+
+
+# Pr信息获取完毕，开始写入excel
+workbook = xlsxwriter.Workbook('sequence_clip.xlsx')
+worksheet = workbook.add_worksheet()
+worksheet.set_column('A:A', 45) #图片列宽一些
+worksheet.set_column('D:H', 12)
+
+# 首行
+worksheet.write('A1', 'Preview')
+worksheet.write('B1', 'Track')
+worksheet.write('C1', 'Path')
+worksheet.write('D1', 'Start')
+worksheet.write('E1', 'End')
+worksheet.write('F1', 'Src_in')
+worksheet.write('G1', 'Src_out')
+worksheet.write('H1', 'Duration')
+
+# 图片缩放系数
+x, y = scale_factor(sequence.frameSizeHorizontal, sequence.frameSizeVertical)
+
+for i in range(len(video_clips)): 
+    clip = video_clips[i]
+    worksheet.insert_image(i+1, 0, clip['preview_path'], {'x_scale': x, 'y_scale': y, 'positioning': 1}) #positioning 1 图片位置和大小都随表格变化
+    worksheet.write(i+1, 1, clip['track'])
+    worksheet.write(i+1, 2, clip['path'])
+    worksheet.write(i+1, 3, clip['start'])
+    worksheet.write(i+1, 4, clip['end'])
+    worksheet.write(i+1, 5, clip['src_in'])
+    worksheet.write(i+1, 6, clip['src_out'])
+    worksheet.write(i+1, 7, clip['duration'])
+
+workbook.close()
+
+for clip in video_clips: 
+    os.remove(clip['preview_path'])
+
+
+print('Excel export succeed')
+
 
 #交互应该放到命令行里，包括 excel 的输出目录设置以及显示的文字信息等
-#需要将时间码转为时:分:秒:帧
 
 
