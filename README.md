@@ -37,13 +37,27 @@ XlsxWriter==0.9.8
 
 ### 示例
 
-启动 Adobe Premiere，并激活一个序列，在 cmd 中转到 `pr_to_excel.py` 所在文件夹，直接输入
+启动 Adobe Premiere，并激活一个序列，在 cmd 中转到 `pr_to_excel.py` 所在文件夹，直接输入：
 
 ```
-python pr_to_excel.py
+$ python pr_to_excel.py
 ```
 
-脚本便会在当前目录下生成一个 `sequence_clip.xlsx` 文件
+脚本便会在当前目录下生成一个 `sequence_clip.xlsx` 文件，默认从每个片段中间帧截取预览图。
+
+
+
+也可以自定义输出路径以及从片段的第一帧（m 为 0）还是中间帧（m 为 1）截取预览图：
+
+```
+$ python pr_to_excel.py -o data/test.xlsx -m 1
+```
+
+```
+$ python pr_to_excel.py -o D:/documents/test.xlsx -m 0
+```
+
+
 
   
 
@@ -51,7 +65,6 @@ python pr_to_excel.py
 
 - 目前还没有做不同情况下的测试
 - 时间码有时会出现 1 帧的误差
-- CLI 命令预计在未来加入
 
 
 
