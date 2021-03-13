@@ -1,10 +1,9 @@
 import sys
 import os
+import time
 import pymiere
 from pymiere import wrappers
 from pymiere import exe_utils
-from openpyxl import Workbook 
-from openpyxl.drawing.image import Image
 import xlsxwriter
 
 
@@ -67,7 +66,10 @@ for track in tracks:
 
 print('Loading preview images')
 while(True):
-    if os.path.isfile(video_clips[-1]['preview_path']):
+    img_list = []
+    for clip in video_clips: 
+        img_list.append(os.path.isfile(clip['preview_path']))
+    if not (False in img_list):
         print('Images loading completed')
         break
 
@@ -113,5 +115,6 @@ print('Excel export succeed')
 
 
 #交互应该放到命令行里，包括 excel 的输出目录设置以及显示的文字信息等
-
+#默认应该是从片段中间截取，而不是片段第一帧，有的因为加了渐入直接黑屏
+#4k还是不大对
 
