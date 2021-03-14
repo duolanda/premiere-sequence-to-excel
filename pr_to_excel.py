@@ -23,7 +23,7 @@ def scale_factor(width, height):
     根据视频大小确定表格中图片的缩放比例
     '''
     x = (1920 / width) * 0.167
-    y = (1080 / width) * 0.02
+    y = (1080 / height) * 0.02
     x, y = round(x, 3), round(y, 3)
     return x, y
 
@@ -33,6 +33,8 @@ def get_clips_info(is_middle):
     '''
     将视频片段的相关信息都以字典形式存到 video_clips 数组中
     '''
+    global size_x, size_y
+    
     video_clips = []
     tracks = sequence.videoTracks
     for track in tracks:
@@ -66,6 +68,19 @@ def get_clips_info(is_middle):
             time.sleep(1)
             break
 
+    #如果有 PIL 的话用它减小一下图片尺寸
+    if size_x >= 1920:
+        try:
+            from PIL import Image
+            size_x = 960
+            size_y = 540 
+            for clip in video_clips: 
+                img = Image.open(clip['preview_path'])
+                out = img.resize((960, 540),Image.ANTIALIAS) 
+                out.save(clip['preview_path'])
+        except:
+            pass
+
     return video_clips
 
 
@@ -89,7 +104,7 @@ def write_into_excel(video_clips, output_path):
     worksheet.write('H1', 'Duration')
 
     # 图片缩放系数
-    x, y = scale_factor(sequence.frameSizeHorizontal, sequence.frameSizeVertical)
+    x, y = scale_factor(size_x, size_y)
 
     for i in range(len(video_clips)): 
         clip = video_clips[i]
@@ -126,6 +141,8 @@ if __name__ == "__main__":
     fps = 1/(float(sequence.timebase)/wrappers.TICKS_PER_SECONDS)
     fps = round(fps, 2) #保留 2 位小数
     size = str(sequence.frameSizeHorizontal) + ' X ' + str(sequence.frameSizeVertical)
+    size_x = sequence.frameSizeHorizontal
+    size_y = sequence.frameSizeVertical
     print('Current project path: {}'.format(project.path))
     print("Current sequence: {}，{}, {} fps".format(sequence.name, size, fps))
 
