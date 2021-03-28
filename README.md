@@ -62,7 +62,8 @@ $ python pr_to_excel.py -o D:/documents/test.xlsx -m 0
 ## Notes
 
 - Timecode sometimes has an error of 1 frame.
-- 4k video may make excel file too big.
+- 4k video may make excel file too big（Now, if current environment contains PIL, the script will use it to reduce image size）.
+- Preview image generation doesn't perform well for multi video track sequences.
 
 
 

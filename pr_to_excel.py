@@ -76,7 +76,7 @@ def get_clips_info(is_middle):
             size_y = 540 
             for clip in video_clips: 
                 img = Image.open(clip['preview_path'])
-                out = img.resize((960, 540),Image.ANTIALIAS) 
+                out = img.resize((960, 540), Image.ANTIALIAS) 
                 out.save(clip['preview_path'])
         except:
             pass
